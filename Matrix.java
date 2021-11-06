@@ -9,7 +9,7 @@ public class Matrix<N extends Number> {
    private int rows;
    private int cols;
    protected ArrayList<ArrayList<N>> data;
-   
+
    /* EXAMPLE DECLARATION OF MATRIX DATA:
    ArrayList<ArrayList<N>> data = new ArrayList<ArrayList<N>>();
    data.add(Arrays.asList(a, b, c));
@@ -17,29 +17,29 @@ public class Matrix<N extends Number> {
    data.add(Arrays.asList(g, h, i));
    ...
    */
-   
-   // ------------------------- CONSTRUCTOR ------------------------- 
+
+   // ------------------------- CONSTRUCTOR -------------------------
    Matrix(ArrayList<ArrayList<N>> data) {
       this.rows = data.size();
       this.cols = data.get(0).size();
       this.data = new ArrayList<ArrayList<N>>(data);
       // Check if # elements in each row is the same, otherwise throw an exception.
    }
-   
+
    // ------------------- ACCESSOR/MUTATOR METHODS -------------------
-   
+
    public int getRows() {
       return rows;
    }
-   
+
    public int getCols() {
       return cols;
    }
-   
+
    public ArrayList<ArrayList<N>> getData() {
       return this.data;
    }
-   
+
    public ArrayList<N> getRow(int row) {
       try {
          return data.get(row);
@@ -48,7 +48,7 @@ public class Matrix<N extends Number> {
          return null;
       }
    }
-   
+
    public void setRow(int row, ArrayList<N> data) {
       try {
          this.data.set(row, data);
@@ -57,7 +57,7 @@ public class Matrix<N extends Number> {
          System.out.println("Matrix not modified.");
       }
    }
-   
+
    public ArrayList<N> getCol(int col) {
       ArrayList<N> colList = new ArrayList<N>();
       try {
@@ -70,7 +70,7 @@ public class Matrix<N extends Number> {
          return null;
       }
    }
-   
+
    public void setCol(int col, ArrayList<N> data) {
       try {
          for (int row = 0; row < rows; row++) {
@@ -81,17 +81,17 @@ public class Matrix<N extends Number> {
          System.out.println("Matrix not modified.");
       }
    }
-   
+
    public N getVal(int row, int col) {
       return data.get(row).get(col);
    }
-   
+
    public void setVal(int row, int col, N val) {
       data.get(row).set(col, val);
    }
-   
+
    // -------------------------------- DEFAULTS ---------------------------------
-   
+
    public String toString() {
       int cell = 3;
       String mString = "";
@@ -103,16 +103,35 @@ public class Matrix<N extends Number> {
       }
       return mString;
    }
-   
+
    public boolean equals(Matrix other) {
       return data.equals(other.getData());
    }
-   
-   // -------------------------------- UTILITIES -------------------------------- 
+
+   // -------------------------------- UTILITIES --------------------------------
    public void rowSwap(int src, int dst) {
       ArrayList<N> srcRow = this.getRow(src);
       ArrayList<N> dstRow = this.getRow(dst);
       this.setRow(src, dstRow);
       this.setRow(dst, srcRow);
    }
+
+   public void colSwap(int src, int dst) {
+     ArrayList<N> srcCol = this.getCol(src);
+     ArrayList<N> dstCol = this.getCol(dst);
+     this.setCol(src, dstCol);
+     this.setCol(dst, srcCol);
+   }
+
+   // public void rowMultiply(int row, N scalar){
+   //   ArrayList<N> aRow = this.getRow(row);
+   //   // Since we are using N generic type, we must make several cases for
+   //   // multiplication depending on known types:
+   //   if (scalar.instanceOf(Integer)) {
+   //     for (int i = 0; i < aRow.size(); i++){
+   //       aRow.set(i, (N) ((Integer) scalar * (Integer) aRow.get(i)));
+   //     }
+   //   }
+   //   this.setRow(row, aRow);
+   // }
 }
