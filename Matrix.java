@@ -4,6 +4,7 @@
 * @version 11-06-2021
 */
 import java.util.ArrayList;
+import java.lang.Math;
 
 public class Matrix {
    private int rows;
@@ -93,19 +94,33 @@ public class Matrix {
    // -------------------------------- DEFAULTS ---------------------------------
 
    public String toString() {
-      int cell = 3;
+      int cell = 4;
       String mString = "";
       for (int row = 0; row < rows; row++) {
-         for (int col = 0; col < cols; col++) {
-            mString += String.format("%-"+cell+"s ", data.get(row).get(col));
+         mString += "|";
+         for (int col = 0; col < (cols - 1); col++) {
+            mString += String.format("%-"+cell+"s ", this.getVal(row, col));
          }
-         mString += "\n";
+         mString += String.format("%s", this.getVal(row, (cols-1))); // No extra spacing for last.
+         mString += "|\n";
       }
       return mString;
    }
 
    public boolean equals(Matrix other) {
       return data.equals(other.getData());
+   }
+   
+   public Matrix clone() {  // Deep copy of Matrix.
+      ArrayList<ArrayList<Double>> clData = new ArrayList<ArrayList<Double>>();
+      for (int row = 0; row < rows; row++) {
+         ArrayList<Double> tmpRow = new ArrayList<Double>();
+         for (int col = 0; col < cols; col++) {
+            tmpRow.add((Double) data.get(row).get(col).doubleValue());
+         }
+         clData.add(tmpRow);
+      }
+      return new Matrix(clData);
    }
 
    // -------------------------------- UTILITIES --------------------------------
@@ -139,6 +154,18 @@ public class Matrix {
      this.setRow(dst, aRow);
    }
 
+   public void rowDel(int row) {
+     this.data.remove(row);
+     this.rows = this.data.size();
+   }
+
+   public void colDel(int col) {
+     for (int row = 0; row < rows; row++) {
+       this.data.get(row).remove(col);
+     }
+     this.cols = this.data.get(0).size();
+   }
+
    public boolean isPivot(int row, int col) {
      if (this.getVal(row, col) != 0) {  // Pivot must be nonzero.
        // Determine if it really is a pivot...
@@ -157,16 +184,32 @@ public class Matrix {
      return -1;
    }
 
-   public Matrix toEchelon() {
-     Matrix aMatrix = this;  // Alter copy of matrix.
-     for (int col = 0; col < cols; col++) {
-       if (this.nonzero(this.getCol(col)) != -1) {  // Find column w/ nonzero.
-         this.rowSwap(0, this.nonzero(this.getCol(col)));  // 1st row nonzero.
-         for (int row = this.nonzero(this.getCol(col)); row < rows; row++) {
-           this.rowAdd
-         }
+   // public Matrix toEchelon() {
+   //   Matrix aMatrix = this;  // Alter copy of matrix.
+   //   for (int col = 0; col < cols; col++) {
+   //     if (this.nonzero(this.getCol(col)) != -1) {  // Find column w/ nonzero.
+   //       this.rowSwap(0, this.nonzero(this.getCol(col)));  // 1st row nonzero.
+   //       for (int row = this.nonzero(this.getCol(col)); row < rows; row++) {
+   //         this.rowAdd
+   //       }
+   //     }
+   //   }
+   // }
+
+   public Double det() {
+     Double det;
+     if ((cols == 2) && (rows == 2)) {
+       det = ((this.getVal(0, 0) * this.getVal(1, 1)) - (this.getVal(0, 1) * this.getVal(1, 0)));
+     } else {
+       det = 0.0;
+       for (int col = 0; col < cols; col++) {
+         Matrix tmpMatrix = this.clone();
+         tmpMatrix.rowDel(0);
+         tmpMatrix.colDel(col);
+         det += ((Math.pow(-1, col) * this.getVal(0, col)) * tmpMatrix.det());
        }
      }
-
+     return det;
    }
+
 }
