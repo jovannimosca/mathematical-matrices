@@ -166,13 +166,6 @@ public class Matrix {
      this.cols = this.data.get(0).size();
    }
 
-   public boolean isPivot(int row, int col) {
-     if (this.getVal(row, col) != 0) {  // Pivot must be nonzero.
-       // Determine if it really is a pivot...
-     }
-     return false;
-   }
-
    // Helper function: searches an ArrayList and returns index of nonzero
    // element, or -1.
    private int nonzero(ArrayList<Double> list) {
@@ -182,6 +175,26 @@ public class Matrix {
        }
      }
      return -1;
+   }
+   
+   public boolean isPivot(int row, int col) {
+      // Zero element cannot be a pivot.
+      if (this.getVal(row, col) != 0) {
+         // Special Case: item in first column & first row:
+         if ((col == 0) && (row == rows - 1)) {
+            return true;
+         // Special Case: item in first column:
+         } else if ((col == 0) &&  (this.getVal(row + 1, col) == 0)) {
+            return true;
+         // Special Case: item in first row:
+         } else if ((row == rows - 1) && (this.getVal(row, col - 1) == 0)) {
+            return true;
+         // General Case:
+         } else if ((this.getVal(row + 1, col) == 0) && (this.getVal(row, col - 1) == 0)) {
+            return true;
+         }
+      }
+      return false;
    }
 
    // public Matrix toEchelon() {
@@ -197,17 +210,23 @@ public class Matrix {
    // }
 
    public Double det() {
-     Double det;
-     if ((cols == 2) && (rows == 2)) {
+     Double det;  // Store determinant as it is recursively modified (or not).
+     if ((cols == 1) && (rows == 1)) {
+       det = this.getVal(0, 0);  // det() of 1x1 matrix [a] is just a.
+     } else if ((cols == 2) && (rows == 2)) {
+       // det() of 2x2 matrix follows formula ad-bc.
        det = ((this.getVal(0, 0) * this.getVal(1, 1)) - (this.getVal(0, 1) * this.getVal(1, 0)));
-     } else {
+     } else if (cols == rows) {
        det = 0.0;
-       for (int col = 0; col < cols; col++) {
+       for (int col = 0; col < cols; col++) {  // det() of an nxn matrix is (-1)^col * a * Aij in first row.
          Matrix tmpMatrix = this.clone();
          tmpMatrix.rowDel(0);
          tmpMatrix.colDel(col);
          det += ((Math.pow(-1, col) * this.getVal(0, col)) * tmpMatrix.det());
        }
+     } else {
+       System.out.println("A determinant cannot be computed for a non-square matrix!");
+       det = null;
      }
      return det;
    }
